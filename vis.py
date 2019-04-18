@@ -12,21 +12,25 @@ class Page(object):
         self.file = open(savepath, 'w')
         self.file.write('<html><body>\n')
 
-    def add_img_table(self, img_list=[], num_col=5):
-        table = Table()
-        self.file.write(table.img_table(img_list, num_col))
+    def add_img_table(self, img_list=[], correct_list=None, num_col=5, bottom_legend=None, msg=''):
+        table = Table(msg=msg)
+        self.file.write(table.img_table(img_list, num_col, correct_list=correct_list, bottom_legend=bottom_legend))
 
     def end_page(self):
         self.file.write('</body></html>')
         self.file.flush()
 
 class Table(object):
-    def __init__(self):
+    def __init__(self, msg=''):
         self.code = '<table cellspacing="0" cellpadding="0">\n'
+        self.msg = msg
 
-    def img_table(self, img_list, num_col, row_numbering=False):
+    def img_table(self, img_list, num_col, correct_list=None, row_numbering=False, bottom_legend=None):
+        correct_list = [True] * len(img_list) if correct_list==None else correct_list
+        bottom_legend = [''] * len(img_list) if bottom_legend==None else bottom_legend
         num_img = len(img_list)
         num_row = num_img//num_col + 1
+        self.code += '<tr><td>{}</td></tr>\n'.format(self.msg)
         self.code += '<tr><td>#image={}</td></tr>\n'.format(num_img)
         for row_idx in range(num_row):
             self.begin_row(row_idx if row_numbering else None)
@@ -35,7 +39,7 @@ class Table(object):
                 if img_idx >= num_img:   break
                 img_path = img_list[img_idx]
                 img = np.array(Image.open(img_path))
-                self.cell(self._figure(img, top_legend=osp.basename(img_path), bottom_legend=('', True)))
+                self.cell(self._figure(img, top_legend=osp.basename(img_path), bottom_legend=(bottom_legend[img_idx], correct_list[img_idx])))
             self.end_row()
         self.end_table()
         return self.code
