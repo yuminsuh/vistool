@@ -6,7 +6,7 @@ from PIL import Image
 import os.path as osp
 
 
-class HTML_page(object):
+class Page(object):
     def __init__(self, savepath):
         self.savepath = savepath
         self.file = open(savepath, 'w')
