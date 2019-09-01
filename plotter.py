@@ -67,3 +67,6 @@ class Plotter(object):
             
     def legend(self, **kwargs):
         plt.legend(**kwargs)
+
+    def show(self):
+        self.fig.show()
