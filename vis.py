@@ -45,6 +45,7 @@ class Table(object):
                 if img_idx >= num_img:   break
                 img_path = img_list[img_idx]
                 img = np.array(Image.open(img_path))
+                img = img[:,:,::-1] if len(img.shape)==3 else img
                 self.cell(self._figure(img, top_legend=osp.basename(img_path), bottom_legend=(bottom_legend[img_idx], correct_list[img_idx])))
             self.end_row()
         self.end_table()
