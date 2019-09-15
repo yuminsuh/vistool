@@ -20,6 +20,12 @@ class Page(object):
         self.file.write('</body></html>')
         self.file.flush()
 
+    def __enter__(self):
+        return self
+    def __exit__(self, *a):
+        self.end_page()
+        print('Exiting Page')
+
 class Table(object):
     def __init__(self, msg=''):
         self.code = '<table cellspacing="0" cellpadding="0">\n'
