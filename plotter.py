@@ -32,9 +32,19 @@ class Plotter(object):
                self.axes_array[axes_idx//self.num_col, axes_idx%self.num_col]
         return axes
 
-    def plot_axes(self, axes_idx, x, y, label='', xlabel='', ylabel='', title=''):
+    def imshow_single(self, axes_idx, img):
         axes = self.get_axes(axes_idx)
-        axes.plot(x, y, label=label)
+        axes.imshow(img)
+        axes.axis('off')
+
+    def plot_axes(self, axes_idx, x, y, label='', xlabel='', ylabel='', title='', logscale=False):
+        if logscale:
+            y = np.log(y)
+        axes = self.get_axes(axes_idx)
+        if x is None:
+            axes.plot(y, label=label)
+        else:
+            axes.plot(x, y, label=label)
         if xlabel!='':
             axes.set_xlabel(xlabel)
         if ylabel!='':
@@ -59,14 +69,20 @@ class Plotter(object):
             ys = ys.reshape(1,ys.size)
         return xs, ys
 
-    def plot_single_legend(self, xs, ys, label='', xlabel='', ylabel='', title=''):
+    def plot_single(self, data_idx, x, y, label='', xlabel='', ylabel='', title='', logscale=False):
+        self.set_axes(data_idx, xlabel=xlabel, ylabel=ylabel, title='{} {}'.format(self.title, data_idx))
+        self.plot_axes(data_idx, x, y, label=label, logscale=logscale)
+            
+    def plot_multi(self, xs, ys, label='', xlabel='', ylabel='', title=''):
         xs, ys = self.preprocess(xs, ys)
         for data_idx, (x, y) in enumerate(zip(xs, ys)):
-            self.set_axes(data_idx, xlabel=xlabel, ylabel=ylabel, title='{} {}'.format(self.title, data_idx))
-            self.plot_axes(data_idx, x, y, label=label)
-            
+            self.plot_single(data_idx, x, y, label=label, xlabel=xlabel, ylabel=ylabel, title=title)
+
     def legend(self, **kwargs):
         plt.legend(**kwargs)
 
     def show(self):
         self.fig.show()
+
+    def adjust_margin(self, left=0.1, right=0.9, wspace=0.1,hspace=0.1):
+        plt.subplots_adjust(left=left, right=right, wspace=wspace, hspace=hspace)
